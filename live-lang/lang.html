@@ -6,16 +6,32 @@
   <title> Hello web audio </title>
 </head>
 
-<body>
+<body style="padding-left: 10px;">
   <p>This is an almost minimal command-based live coding engine. Press the button to re-evaluate your code.
     This language allows you to specify a rhythmic pattern of beats by entering a space-separated list of times and pitches. 
     You can also include javascript computation in the values.
     As an example:
   </p>
-  <p>1+1@220 2@220*2 1*3@270</p>
-  <button>re-evaluate</button>
+  <p>s! 1+1@220 2@220*2 1*3@270</p>
+  <p> to change the wavetype of the sound put a waveform indicator followed by a <strong>"!" exclamation point</strong>
+  </p>
+  <p> options for a different wave type are: </p>
+  <ul>
+    <li>s : sawtooth</li>
+    <li>S : square</li>
+    <li>t : triangle</li>
+  </ul>
+  <button id="playButton">re-evaluate</button>
   <input type="text" id="code">
+  <button id="stopButton">play/pause</button>
+
+  <p style="padding-top: 20px;"> <h3> also, here's a video of me live coding in sonic pi</h3></p>
+<p>
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/3hKpu8MY3_4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </p>
 </body>
+
+  
 <script src="lang.js"> </script>
 
 </html>

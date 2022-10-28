@@ -3,7 +3,15 @@ var audioCtx;
 var osc;
 var timings;
 var liveCodeState = [];
-const playButton = document.querySelector('button');
+const playButton = document.getElementById('playButton');
+const stopButton = document.getElementById('stopButton');
+var waveform;
+
+const waveMap = {
+    "s" : "sawtooth",
+    "S" : "square",
+    "t" : "triangle"
+}
 
 function initAudio() {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)
@@ -19,6 +27,7 @@ function scheduleAudio() {
     let timeElapsedSecs = 0;
     liveCodeState.forEach(noteData => {
         timings.gain.setTargetAtTime(1, audioCtx.currentTime + timeElapsedSecs, 0.01)
+        osc.type = waveform;
         osc.frequency.setTargetAtTime(noteData["pitch"], audioCtx.currentTime + timeElapsedSecs, 0.01)
         timeElapsedSecs += noteData["length"]/10.0;
         timings.gain.setTargetAtTime(0, audioCtx.currentTime + timeElapsedSecs, 0.01)
@@ -33,15 +42,24 @@ function parseCode(code) {
     //how could we allow for two lines that play at the same time?
     //what if we want variables?
     //how does this parsing technique limit us?
-    let notes = code.split(" ");
+    let notes;
+    let newWF = code.split("! ")
+    if (newWF.length == 2){ 
+        waveform = waveMap[newWF[0]];
+        notes = newWF[1].split(" ");
+    }
+    else{ 
+        waveform = "sine";
+        notes = code.split(" ");}
 
     //notice this will fail if the input is not correct
     //how could you handle this? allow some flexibility in the grammar? fail gracefully?
     //ideally (probably), the music does not stop
     notes = notes.map(note => {
         noteData = note.split("@");
+        
         return   {"length" : eval(noteData[0]), //the 'eval' function allows us to write js code in our live coding language
-                "pitch" : eval(noteData[1])};
+                "pitch" : eval(noteData[1])}; //no arithmetic means no eval
                 //what other things should be controlled? osc type? synthesis technique?
     });
     return notes;
@@ -66,4 +84,15 @@ playButton.addEventListener('click', function () {
     reevaluate();
 
 
+});
+stopButton.addEventListener('click', function (){
+    if (audioCtx){
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        else if (audioCtx.state === 'running') {
+            audioCtx.suspend();
+        }
+    }
+    
 });
